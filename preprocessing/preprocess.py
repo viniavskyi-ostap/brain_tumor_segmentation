@@ -79,10 +79,12 @@ def process_images_to_slices(input_path, output_path, threshold, val_size=0.2):
     np.random.seed(42)
 
     images_paths = glob.glob(os.path.join(input_path, '?GG', '*'))
+    images_paths.sort()
+    
     train_path, val_path = create_output_dirs(output_path)
 
     train_i, val_i = 0, 0
-    for path in tqdm.tqdm(images_paths, desc='[INFO] Processing images:'):
+    for path in tqdm.tqdm(images_paths, desc='[INFO] Processing train/val images'):
         X, y = read_instance(path, load_y=True)
         mask = (y != 0).mean(axis=(0, 1)) > threshold
         for i, flag in enumerate(mask):
@@ -103,14 +105,15 @@ def process_test(input_path, output_path):
         output_path (str): path to output folder
     """
     images_paths = glob.glob(os.path.join(input_path, 'BraTS*'))
-
+    images_paths.sort()
+    
     test_path = os.path.join(output_path, 'test')
     if os.path.exists(test_path):
         shutil.rmtree(test_path)
 
     os.makedirs(test_path)
 
-    for i, path in tqdm.tqdm(enumerate(images_paths), desc='[INFO] Processing images:'):
+    for i, path in tqdm.tqdm(enumerate(images_paths), desc='[INFO] Processing test images'):
         X = read_instance(path, load_y=False)
         np.save(os.path.join(test_path, f'{i}.npy'), X.astype(np.float32))
 
