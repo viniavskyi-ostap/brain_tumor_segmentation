@@ -73,7 +73,7 @@ def process_images_to_slices(input_path, output_path, threshold, val_size=0.2):
 
     def __save_slice(X, y, path, i):
         """Save single slice of image"""
-        np.save(os.path.join(path, 'X', f'{i}.npy'), X.astype(np.float32))
+        np.save(os.path.join(path, 'X', f'{i}.npy'), X.astype(np.uint16))
         np.save(os.path.join(path, 'y', f'{i}.npy'), y.astype(np.uint8))
 
     np.random.seed(42)
@@ -115,7 +115,7 @@ def process_test(input_path, output_path):
 
     for i, path in tqdm.tqdm(enumerate(images_paths), desc='[INFO] Processing test images'):
         X = read_instance(path, load_y=False)
-        np.save(os.path.join(test_path, f'{i}.npy'), X.astype(np.float32))
+        np.save(os.path.join(test_path, f'{i}.npy'), X.astype(np.uint16))
 
 
 if __name__ == '__main__':
