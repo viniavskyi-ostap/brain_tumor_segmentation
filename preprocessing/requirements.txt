@@ -1,0 +1,4 @@
+tqdm==4.41.1
+numpy==1.17.4
+nibabel==3.0.0
+PyYAML==5.2
