@@ -10,10 +10,8 @@ class BratsDataset(torch.utils.data.Dataset):
 
         self.length = len(os.listdir(self.x_path))
 
-
     def __len__(self):
         return self.length
-
 
     def __getitem__(self, i):
         X = np.load(os.path.join(self.x_path, f"{i}.npy"))
