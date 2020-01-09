@@ -14,7 +14,9 @@ class BratsDataset(torch.utils.data.Dataset):
         return self.length
 
     def __getitem__(self, i):
-        X = np.load(os.path.join(self.x_path, f"{i}.npy"))
+        X = np.load(os.path.join(self.x_path, f"{i}.npy")).astype(np.float32)
         y = np.load(os.path.join(self.y_path, f"{i}.npy"))
+        y[y == 4] = 3
 
-        return torch.FloatTensor(X), torch.FloatTensor(y)
+        return torch.from_numpy(X), torch.from_numpy(y).long()
+

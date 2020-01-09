@@ -1,0 +1,30 @@
+---
+project: brain_tumor_segmentation
+
+train:
+  path: /home/viniavskyi/Documents/datasets/BRATS/preprocessed/train
+  width: &WIDTH 192
+  height: &HEIGHT 160
+  crop: random
+
+val:
+  path: /home/viniavskyi/Documents/datasets/BRATS/preprocessed/val
+  width: *WIDTH
+  height: *HEIGHT
+  crop: center
+
+loss: cross_entropy
+num_epochs: 6
+batch_size: 8
+optimizer:
+  name: adam
+  lr: 0.0001
+
+scheduler:
+  name: plateau
+  mode: max
+  patience: 5
+  factor: 0.5
+  min_lr: 0.0000001
+
+early_stopping: 25
