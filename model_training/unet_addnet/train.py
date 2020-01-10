@@ -16,7 +16,7 @@ val_dl = torch.utils.data.DataLoader(val_ds, batch_size=8, shuffle=True)
 
 if torch.cuda.is_available():
     print("Train on GPU")
-    device = torch.device("cuda")
+    device = torch.device("cuda:0")
 else:
     print("Train on CPU")
     device = torch.device("cpu")
@@ -24,3 +24,4 @@ else:
 model = UNetAddNet(in_channels=4, out_channels=4)
 
 trainer = Trainer(model, config, train_dl, val_dl, device)
+trainer.train()

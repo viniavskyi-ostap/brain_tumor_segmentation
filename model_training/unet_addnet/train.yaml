@@ -1,6 +1,8 @@
 ---
 project: brain_tumor_segmentation
 
+log_path: /home/viniavskyi/Documents/university/ai/brain_tumor_segmentation/logs
+
 train:
   path: /home/viniavskyi/Documents/datasets/BRATS/preprocessed/train
   width: &WIDTH 192
@@ -13,7 +15,13 @@ val:
   height: *HEIGHT
   crop: center
 
-loss: cross_entropy
+loss:
+  name: generalized_dice
+  smooth: 1e-5
+
+metrics:
+  - dice
+
 num_epochs: 6
 batch_size: 8
 optimizer:
@@ -22,9 +30,7 @@ optimizer:
 
 scheduler:
   name: plateau
-  mode: max
+  mode: min
   patience: 5
   factor: 0.5
   min_lr: 0.0000001
-
-early_stopping: 25
