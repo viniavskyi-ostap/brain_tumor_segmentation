@@ -18,6 +18,7 @@ class Trainer:
         self.train_dl = train_dl
         self.val_dl = val_dl
         self.device = device
+        self.log_path = config["log_path"]
 
         if not os.path.exists(config["log_path"]):
             os.mkdir(config["log_path"])
@@ -29,18 +30,38 @@ class Trainer:
             train_loss = self._run_epoch(epoch)
             val_loss, metrics = self._validate()
             self.scheduler.step(val_loss)
+            self._set_checkpoint(val_loss)
 
             print(f"\nEpoch: {epoch}; train loss = {train_loss}; validation loss = {val_loss}")
 
             self._write_to_tensorboard(epoch, train_loss, val_loss, metrics)
+
+    def _save_checkpoint(self, file_prefix):
+        torch.save(
+            {
+                'model': self.model.module.state_dict()
+            },
+            os.path.join(self.log_path, '{}.h5'.format(file_prefix)))
+
+    def _set_checkpoint(self, val_loss):
+        """ Saves model weights in the last checkpoint.
+        Also, model is saved as the best model if model has the best loss
+        """
+        if val_loss < self.best_loss:
+            self.best_loss = val_loss
+            self._save_checkpoint(file_prefix='best')
+
+        self._save_checkpoint(file_prefix='last')
 
     def _init_params(self):
         self.epochs = self.config["num_epochs"]
         self.criterion = get_loss(self.config['loss'])
         self.optimizer = self._get_optimizer()
         self.scheduler = self._get_scheduler()
-        self.metrics = {metric_name: get_metric(metric_name, device=self.device) for metric_name in self.config["metrics"]}
+        self.metrics = {metric_name: get_metric(metric_name, device=self.device) for metric_name in
+                        self.config["metrics"]}
         self.writer = SummaryWriter(self.config["log_path"])
+        self.best_loss = float("inf")
 
     def _run_epoch(self, epoch):
         self.model.train()
