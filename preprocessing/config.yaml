@@ -2,5 +2,5 @@ train_input_path: /home/viniavskyi/Documents/datasets/BRATS/MICCAI_BraTS_2019_Da
 test_input_path: /home/viniavskyi/Documents/datasets/BRATS/MICCAI_BraTS_2019_Data_Validation
 preprocessed_path: /home/viniavskyi/Documents/datasets/BRATS/preprocessed
 
-background_threshold: 0.005
+background_threshold: 0.02
 validation_size: 0.15

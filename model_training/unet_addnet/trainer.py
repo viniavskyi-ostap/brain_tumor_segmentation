@@ -2,9 +2,10 @@ import numpy as np
 import torch
 import torch.optim as optim
 import tqdm
+import time
+import os
 from collections import defaultdict
 from tensorboardX import SummaryWriter
-import os
 
 from model_training.common.losses import get_loss
 from model_training.common.metrics import get_metric
@@ -17,7 +18,6 @@ class Trainer:
         self.train_dl = train_dl
         self.val_dl = val_dl
         self.device = device
-        self.log_path = config["log_path"]
 
         if not os.path.exists(config["log_path"]):
             os.mkdir(config["log_path"])
@@ -59,7 +59,11 @@ class Trainer:
         self.scheduler = self._get_scheduler()
         self.metrics = {metric_name: get_metric(metric_name, device=self.device) for metric_name in
                         self.config["metrics"]}
-        self.writer = SummaryWriter(self.config["log_path"])
+
+        self.log_path = os.path.join(self.config['log_path'], f'train-{time.time()}')
+        os.mkdir(self.log_path)
+        self.writer = SummaryWriter(self.log_path)
+
         self.best_loss = float("inf")
 
     def _run_epoch(self, epoch):
@@ -137,7 +141,8 @@ class Trainer:
         params = self.model.parameters()
 
         if optimizer_config['name'] == 'adam':
-            optimizer = optim.Adam(params, lr=optimizer_config['lr'])
+            optimizer = optim.Adam(params, lr=optimizer_config['lr'],
+                                   weight_decay=optimizer_config.get('weight_decay', 0))
         elif optimizer_config['name'] == 'sgd':
             optimizer = optim.SGD(params,
                                   lr=optimizer_config['lr'],

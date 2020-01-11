@@ -22,15 +22,16 @@ loss:
 metrics:
   - dice
 
-num_epochs: 100
-batch_size: 12
+num_epochs: 15
+batch_size: 10
 optimizer:
   name: adam
-  lr: 0.0003
+  lr: 0.0004
+  weight_decay: 0.00001
 
 scheduler:
   name: plateau
   mode: min
-  patience: 5
+  patience: 2
   factor: 0.5
   min_lr: 0.0000001
