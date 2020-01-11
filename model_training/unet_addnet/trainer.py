@@ -24,7 +24,7 @@ class Trainer:
 
     def train(self):
         self._init_params()
-        self.model.to(self.device)
+
         for epoch in range(self.epochs):
             train_loss = self._run_epoch(epoch)
             val_loss, metrics = self._validate()
@@ -66,6 +66,8 @@ class Trainer:
 
         self.best_loss = float("inf")
 
+        self.model.to(self.device)
+
     def _run_epoch(self, epoch):
         self.model.train()
         losses = []
@@ -78,7 +80,7 @@ class Trainer:
             self.model.zero_grad()
 
             X, y = X.to(self.device), y.to(self.device)
-            y_pred = self.model(X)
+            y_pred, _ = self.model(X)
 
             loss = self.criterion(y_pred, y)
             loss.backward()
@@ -100,7 +102,8 @@ class Trainer:
         with torch.no_grad():
             for X, y in self.val_dl:
                 X, y = X.to(self.device), y.to(self.device)
-                y_pred = self.model(X)
+                y_pred, _ = self.model(X)
+
                 loss = self.criterion(y_pred, y)
                 losses.append(loss.item())
 
@@ -138,7 +141,7 @@ class Trainer:
                 torch.optim.optimizer.Optimizer: model optimizer
         """
         optimizer_config = self.config['optimizer']
-        params = self.model.parameters()
+        params = self._get_params()
 
         if optimizer_config['name'] == 'adam':
             optimizer = optim.Adam(params, lr=optimizer_config['lr'],
@@ -158,3 +161,6 @@ class Trainer:
 
         for metric_name in val_metrics:
             self.writer.add_scalar(f'Validation_{metric_name}', val_metrics[metric_name], epoch)
+
+    def _get_params(self):
+        return self.model.parameters()

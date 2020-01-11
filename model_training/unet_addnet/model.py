@@ -1,5 +1,5 @@
 import torch.nn as nn
-from model_training.common.resblock import ResBlock
+from model_training.common.modules import ResBlock
 
 
 class UNetAddNet(nn.Module):
@@ -70,12 +70,11 @@ class UNetAddNet(nn.Module):
 
         out = self.conv20(out)
 
-        return out
+        return out, enc256
 
 
 if __name__ == '__main__':
     from torchsummary import summary
 
     net = UNetAddNet(in_channels=4, out_channels=3)
-
-    summary(net, (4, 160, 192), device='cpu')
+    summary(net, (4, 240, 240), device='cpu')

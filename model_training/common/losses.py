@@ -33,6 +33,30 @@ class GeneralizedDiceLoss(nn.Module):
         return 1 - dice_loss
 
 
+class CombinedLoss(nn.Module):
+    def __init__(self, beta1, beta2, eps):
+        super(CombinedLoss, self).__init__()
+
+        self.beta1 = beta1
+        self.beta2 = beta2
+
+        self.dice_loss = GeneralizedDiceLoss(eps)
+        self.mse_loss = nn.MSELoss()
+
+    @staticmethod
+    def kl_loss(mu, sigma):
+        return -0.5 * torch.sum(1 + torch.log(sigma.pow(2)) - mu.pow(2) - sigma.pow(2))
+
+    def forward(self, y_pred, y_true, X_pred=None, X_true=None, mu=None, sigma=None):
+        loss = self.dice_loss(y_pred, y_true)
+
+        if X_pred is not None:
+            loss += self.beta1 * self.mse_loss(X_pred, X_true)
+            loss += self.beta2 * CombinedLoss.kl_loss(mu, sigma)
+
+        return loss
+
+
 def get_loss(loss):
     """ Creates loss from config
         Args:
@@ -45,7 +69,7 @@ def get_loss(loss):
         return nn.CrossEntropyLoss()
     elif loss_name == 'generalized_dice':
         return GeneralizedDiceLoss(float(loss['smooth']))
-    elif loss_name == 'mse':
-        return nn.MSELoss()
+    elif loss_name == 'combined':
+        return CombinedLoss(float(loss['beta1']), float(loss['beta2']), float(loss['smooth']))
     else:
         raise ValueError(f"Loss [{loss_name}] not recognized.")

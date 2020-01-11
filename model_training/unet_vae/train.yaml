@@ -1,0 +1,39 @@
+---
+project: brain_tumor_segmentation
+
+log_path: /home/viniavskyi/Documents/university/ai/brain_tumor_segmentation/logs
+
+train:
+  path: /home/viniavskyi/Documents/datasets/BRATS/preprocessed/train
+  width: &WIDTH 192
+  height: &HEIGHT 160
+  crop: random
+
+val:
+  path: /home/viniavskyi/Documents/datasets/BRATS/preprocessed/val
+  width: *WIDTH
+  height: *HEIGHT
+  crop: center
+
+loss:
+  name: combined
+  smooth: 1e-5
+  beta1: 0.05
+  beta2: 0.05
+
+metrics:
+  - dice
+
+num_epochs: 15
+batch_size: 8
+optimizer:
+  name: adam
+  lr: 0.0004
+  weight_decay: 0.00001
+
+scheduler:
+  name: plateau
+  mode: min
+  patience: 2
+  factor: 0.5
+  min_lr: 0.0000001
