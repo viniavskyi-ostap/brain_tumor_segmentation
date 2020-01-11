@@ -11,8 +11,8 @@ with open("train.yaml", "r") as config_file:
 train_ds = BratsDataset(config["train"]["path"])
 val_ds = BratsDataset(config["val"]["path"])
 
-train_dl = torch.utils.data.DataLoader(train_ds, batch_size=8, shuffle=True)
-val_dl = torch.utils.data.DataLoader(val_ds, batch_size=8, shuffle=True)
+train_dl = torch.utils.data.DataLoader(train_ds, batch_size=config['batch_size'], shuffle=True)
+val_dl = torch.utils.data.DataLoader(val_ds, batch_size=config['batch_size'], shuffle=True)
 
 if torch.cuda.is_available():
     print("Train on GPU")

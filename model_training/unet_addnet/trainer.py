@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.optim as optim
 import tqdm
 from collections import defaultdict
@@ -39,7 +38,7 @@ class Trainer:
     def _save_checkpoint(self, file_prefix):
         torch.save(
             {
-                'model': self.model.module.state_dict()
+                'model': self.model.state_dict()
             },
             os.path.join(self.log_path, '{}.h5'.format(file_prefix)))
 

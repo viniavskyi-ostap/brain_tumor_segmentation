@@ -22,11 +22,11 @@ loss:
 metrics:
   - dice
 
-num_epochs: 6
-batch_size: 8
+num_epochs: 100
+batch_size: 12
 optimizer:
   name: adam
-  lr: 0.0001
+  lr: 0.0003
 
 scheduler:
   name: plateau
